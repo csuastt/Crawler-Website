@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="no-referrer">
+    <title>Movies Search</title>
+    <link rel="stylesheet" href="{% static 'result/assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Aleo">
+    <link rel="stylesheet" href="{% static 'result/assets/css/Footer-Basic.css' %}">
+    <link rel="stylesheet" href="{% static 'result/assets/css/Navigation-with-Button.css' %}">
+    <link rel="stylesheet" href="{% static 'result/assets/css/Newsletter-Subscription-Form.css' %}">
+    <link rel="stylesheet" href="{% static 'result/assets/css/styles.css' %}">
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="padding: 8px;">
+        <div class="container">
+            <a href="/">
+                <img src="{% static 'result/assets/img/photo.gif' %}" style="width: 80px;height: 80px;">
+            </a>
+            <button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav mr-auto">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/" style="font-family: Aleo, serif;">Movies List</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" href="/actor/" style="font-family: Aleo, serif;">Actors List</a>
+                    </li>
+                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" data-toggle="dropdown"
+                        aria-expanded="false" href="#" style="font-family: Aleo, serif;">Color&nbsp;</a>
+                        <div class="dropdown-menu" role="menu">
+                            <a class="dropdown-item" role="presentation" href="#" style="font-family: Aleo, serif;">Red</a>
+                            <a class="dropdown-item" role="presentation" href="#" style="font-family: Aleo, serif;">White</a>
+                            <a class="dropdown-item" role="presentation" href="#" style="font-family: Aleo, serif;">Blue</a>
+                            <a class="dropdown-item" role="presentation" href="#" style="font-family: Aleo, serif;">Yellow</a>
+                        </div>
+                    </li>
+                </ul>
+                <form class="form-inline" method="post" action="{% url 'find_result'%}" style="flex-wrap: nowrap;">
+                    {% csrf_token %}
+                    <input name="keywords" type="search" placeholder="Enter to search" class="form-control" style="width: 100%;margin-right: 5px;" maxlength="20">
+                    <select class="form-control" name="search_type" style="width: 120px;margin-right: 5px;">
+                        <option value="Movies">Movies</option>
+                        <option value="Actors">Actors</option>
+                        <option value="Comments">Comments</option>
+                    </select>
+                    <button class="btn btn-primary" type="submit" style="background-color: #007bff;border: none;/*! text-align: center; */padding-top: 8px;padding-bottom: 8px;">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div style="min-height: 60vh;" class="result">
+        <div class="container">
+    <!-- 电影详情 -->
+    {% if this_movie_name %}
+    <article style="min-height: 60vh;">
+        <h1 class="post-title" style="padding-top: 20px;padding-bottom: 20px;color:#7d8285;text-align: center;">{{ this_movie_name }}</h1>
+        <img src="{{picture_src}}" alt="{{ this_movie_name }}"  style="height: 300px;margin-left: 460px;margin-bottom: 20px;" >
+        <p class="post-info" style="text-align: center;color: #7d8285;"><span>state:{{ state }}</span>&nbsp;&nbsp;&nbsp;<span>language:{{ language }}</span>&nbsp;&nbsp;&nbsp;<span>length:{{ length }}</span></p>
+        <h3 style="color: #7d8285;">Introduction:</h3><br>
+        <div class="post-content" style="padding-top: 15px;line-height: 3;">
+            <p style="color: #7d8285;">{{ introduction }}</p>
+        </div>
+        <h3 style="color: #7d8285;">Comments:</h3><br>
+        <div class="post-content" style="padding-top: 15px;line-height: 3;">
+            {% for line in comments %}
+            <p style="color: #7d8285;">{{ line }}</p>
+            {% endfor %}
+        </div>
+        <h3 style="color: #7d8285;">Actors:</h3><br>
+        <div class="features-clean">
+            <div class="container">
+                <div class="row features" style="font-family: Aleo, serif;justify-content: center;">
+                    {% for res in actor %}
+                    <div class="col-sm-6 col-lg-3 item" style="margin-bottom:20px;">
+                        <div class="card"  style="text-align: center;height: 100%;">
+                            <div class="card-header">
+                                <a href="/actor_detail/{{res.1}}">
+                                    <img src="{{res.2}}" class="card-img-top" alt="{{res.0}}" href="/actor_detail/{{res.1}}" style="height: 200px; width: 141px">
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <a href="/actor_detail/{{res.1}}">
+                                    <h5 class="card-title">{{res.0}}</h5>
+                                </a>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/actor_detail/{{res.1}}" class="btn btn-primary" style="font-family: sans-serif;">More</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </article>
+    {% endif %}
+    <!-- 演员详情 -->
+    {% if this_actor_name %}
+    <article style="min-height: 60vh;">
+        <h1 class="post-title" style="padding-top: 20px;padding-bottom: 20px;color:#7d8285;text-align: center;">{{ this_actor_name }}</h1>
+        <img src="{{picture_src}}" alt="{{ this_actor_name }}"  style="height: 300px;margin-left: 460px;margin-bottom: 20px;" >
+        <p class="post-info" style="text-align: center;color: #7d8285;">
+            <span>sex:{{ sex }}</span>
+            &nbsp;&nbsp;&nbsp;<span>star:{{ star }}</span>
+            &nbsp;&nbsp;&nbsp;<span>birthday:{{ birthday }}</span>
+            &nbsp;&nbsp;&nbsp;<span>birthplace:{{ birthplace }}</span>
+        </p>
+        <h3 style="color: #7d8285;">Introduction:</h3><br>
+        <div class="post-content" style="padding-top: 15px;line-height: 3;">
+            <p style="color: #7d8285;">{{ introduction }}</p>
+        </div>
+        <h3 style="color: #7d8285;">Co-Actors:</h3><br>
+        <div class="features-clean">
+            <div class="container">
+                <div class="row features" style="font-family: Aleo, serif;justify-content: center;">
+                    {% for res in actor %}
+                    <div class="col-sm-6 col-lg-3 item" style="margin-bottom:20px;">
+                        <div class="card"  style="text-align: center;height: 100%;">
+                            <div class="card-header">
+                                <a href="/actor_detail/{{res.1}}">
+                                    <img src="{{res.2}}" class="card-img-top" alt="{{res.0}}" href="/actor_detail/{{res.1}}" style="height: 200px; width: 141px">
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <a href="/actor_detail/{{res.1}}">
+                                    <h5 class="card-title">{{res.0}}</h5>
+                                </a>
+                                <p class="card-text">Number of cooperative works: {{res.3}}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/actor_detail/{{res.1}}" class="btn btn-primary" style="font-family: sans-serif;">More</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <h3 style="color: #7d8285;">Film Works:</h3><br>
+        <div class="features-clean">
+            <div class="container">
+                <div class="row features" style="font-family: Aleo, serif;justify-content: center;">
+                    {% for res in movie %}
+                    <div class="col-sm-6 col-lg-3 item" style="margin-bottom:20px;">
+                        <div class="card"  style="text-align: center;height: 100%;">
+                            <div class="card-header">
+                                <a href="/movie_detail/{{res.1}}">
+                                    <img src="{{res.2}}" class="card-img-top" alt="{{res.0}}" href="/movie_detail/{{res.1}}" style="height: 200px; width: 141px">
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <a href="/movie_detail/{{res.1}}">
+                                    <h5 class="card-title">{{res.0}}</h5>
+                                </a>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/movie_detail/{{res.1}}" class="btn btn-primary" style="font-family: sans-serif;">More</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </article>
+    {% endif %}
+    </div>
+    <div class="footer-basic">
+        <footer>
+            <p class="copyright" style="padding-top: 53px;margin: 27px;margin-bottom: 0px;color: #7d8285;font-size: 13px;margin-top: 27px;">Movies Search © 2020</p>
+        </footer>
+    </div>
+    <script src="{% static 'result/assets/js/jquery.min.js' %}"></script>
+    <script src="{% static 'result/assets/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script>
+        var container = document.querySelector('.container');
+        var listItems = document.querySelectorAll('.list-item');
+
+        function onViewChange(evt) {
+            container.classList.toggle('view-change');
+        }
+
+        for (var i = 0; i < listItems.length; i++) {
+            listItems[i].addEventListener('click', onViewChange, false);
+        }
+
+        var togs = document.querySelectorAll(".dropdown-item");
+        var tog_red = togs[0]
+        function setRed() {
+            $('p,a,h1').css('color', '#7d8285');
+            $('.btn').css('background-color', 'rgb(224, 7, 169)');
+            $(':not(button,.form-control,.btn)').css('background-color', '#ffa4a4');
+        }
+        function setWhite() {
+            $('p,a,h1').css('color', '#7d8285');
+            $('.btn').css('background-color', '#007bff');
+            $(':not(button,.form-control,.btn)').css('background-color', 'white');
+        }
+        function setBlue() {
+            $('.btn').css('background-color', 'rgb(16, 200, 62)');
+            $(':not(button,.form-control,.btn)').css('background-color', '#1a8cff');
+            $('p, a,h1').css('color', 'white');
+        }
+        function setYellow() {
+            $('p,a,h1').css('color', '#7d8285');
+            $('.btn').css('background-color', 'rgb(245, 67, 67)');
+            $(':not(button,.form-control,.btn)').css('background-color', '#ffffa4');
+        }
+        togs[0].addEventListener("click",setRed,false)
+        togs[1].addEventListener("click",setWhite,false)
+        togs[2].addEventListener("click",setBlue,false)
+        togs[3].addEventListener("click",setYellow,false)
+    </script>
+</body>
+
+</html>
